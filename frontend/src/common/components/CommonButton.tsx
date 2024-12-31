@@ -1,5 +1,6 @@
 import React from 'react'
-import '../styling/common.css'
+import '../../styling/common.css'
+// import '../styling/common.css'
 
 interface ButtonProps {
   text: string;

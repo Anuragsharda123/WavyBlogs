@@ -3,13 +3,10 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Response } from "express";
 import { Local } from "../environment/env";
-import Wave from "../models/Wave";
-import Preference from "../models/Preference";
 
 const SECRET_KEY:any = Local.SECRET_KEY
 
 export const userList = async(req:any, res:Response) => {
-    await Preference.findAll();
     try{
         await User.findAll();
     }
