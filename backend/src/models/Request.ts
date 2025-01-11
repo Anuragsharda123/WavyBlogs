@@ -37,9 +37,23 @@ Request.init({
     deletedAt:{
         type: DataTypes.DATE,
         allowNull: true
+    },
+    sent_to:{
+        type: DataTypes.STRING,
+        references: {
+            model: User,
+            key: 'uuid',
+            },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+        allowNull: true
+    },
+    sent_to_mail:{
+        type: DataTypes.STRING,
+        allowNull: true,
     }
 },{
-    modelName: 'Friend',
+    modelName: 'Request',
     sequelize
 })
 

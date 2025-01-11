@@ -51,8 +51,8 @@ const Signup:React.FC = () => {
     <div className='h-100'>
         <div className='lc p-5 ms-5 mt-5'>
             <div className='mt-5 ms-5 mb-5'>
-                <h2 className='text-center w-100 '>Login Your Account</h2>
-                <hr className=' opacity-100 rounded' />
+                <h2 className='text-center w-100 text-3xl mb-3 '>Login Your Account</h2>
+                <hr className=' opacity-100 rounded ' />
             </div>
 
             <div className='ms-5'>
