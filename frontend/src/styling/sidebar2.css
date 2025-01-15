@@ -10,3 +10,14 @@
 .cmn-clr{
   color: #3E5677;
 }
+
+.foot{
+  
+  /* margin-top: auto; */
+  width: 85vw;
+  z-index: 33;
+}
+
+.hh{
+  height: 83vh;
+}

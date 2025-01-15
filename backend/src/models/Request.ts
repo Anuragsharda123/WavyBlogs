@@ -11,6 +11,7 @@ class Request extends Model{
     public deletedAt!: Date;
     public sent_by!: string;
     public sent_to!: string;
+    public url!: string;
 }
 
 Request.init({
@@ -27,6 +28,10 @@ Request.init({
     status:{
         type: DataTypes.BOOLEAN,
         defaultValue: true,
+        allowNull: false
+    },
+    url:{
+        type: DataTypes.STRING,
         allowNull: false
     },
     isDeleted:{

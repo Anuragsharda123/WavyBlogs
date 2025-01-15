@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/', userRouter);
 
-sequelize.sync().then(()=>{
+sequelize.sync({alter:false}).then(()=>{
     console.log('Database connected');
     
     app.listen(Local.SERVER_PORT,  () => {

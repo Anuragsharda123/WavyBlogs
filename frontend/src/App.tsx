@@ -13,6 +13,7 @@ import Preferences from './components/Preferences';
 import CreateWave from './components/CreateWave';
 import Friends from './components/Friends';
 import ChangePassword from './components/ChangePassword';
+import InviteFriend from './components/InviteFriend';
 
 const App:React.FC = () => {
 
@@ -27,6 +28,14 @@ const App:React.FC = () => {
         },
         {
           path: '/login',
+          element: <Login />
+        },
+        {
+          path: '/:url',
+          element: <Signup />
+        },
+        {
+          path: '/login/:url',
           element: <Login />
         }
       ]
@@ -59,6 +68,10 @@ const App:React.FC = () => {
           path: '/app/change-password',
           element: <ChangePassword />
         },
+        {
+          path: '/app/invite-friends',
+          element: <InviteFriend />
+        }
       ]
     }
   ])

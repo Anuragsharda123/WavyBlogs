@@ -8,6 +8,8 @@ import sendInvitation from "../utils/mailer";
 import Request from "../models/Request";
 import { loginTemplate } from "../mailTemplate/loginTemplate";
 import { signupTemplate } from "../mailTemplate/signuptemplate";
+import Friend from "../models/Friend";
+import { Op } from "sequelize";
 
 const SECRET_KEY:any = Local.SECRET_KEY
 
@@ -169,20 +171,40 @@ export const inviteFriend = async(req:any, res:Response) => {
         const {friends} = req.body;
         const user:any = await User.findByPk(uuid);
         await friends.map(async(friend:any)=>{
-        
+
             let existedUser = await User.findOne({where:{ email:friend.email }});
             if(existedUser){
-                let request = await Request.create({
-                    sent_by: uuid,
-                    sent_to: existedUser.uuid,
-                })
+                const friend = await Friend.findOne({where:{[Op.or]:[
+                    {[Op.and]:[
+                        {user_1_Id:uuid},
+                        {user_2_Id:existedUser.uuid}
+                    ]},
+                    {[Op.and]:[
+                        {user_1_Id:existedUser.uuid},
+                        {user_2_Id:uuid}
+                    ]}
+                ]}});
+                if(friend){
+                    res.status(400).json({"message":` ${existedUser.firstname} ${existedUser.lastname} is already your friend`});
+                }
                 var template:string = loginTemplate(user.firstname, user.lastname, existedUser.email);
-            } else {
+                const temp = template.split(' ');
+                const link = temp[temp.length-1];
                 let request = await Request.create({
+                    url:link,
                     sent_by: uuid,
-                    sent_to_mail: friend.email,
+                    sent_to: existedUser.uuid
                 });
+            } else {
                 var template:string = signupTemplate(user.firstname, user.lastname, friend.email, friend.firstname, friend.lastname, user.uuid);
+                const temp = template.split(' ');
+                const link = temp[temp.length-1];
+
+                let request = await Request.create({
+                    url:link,
+                    sent_by: uuid,
+                    sent_to_mail: friend.email
+                });
             }
             sendInvitation(friend.email, template);
         });

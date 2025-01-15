@@ -105,7 +105,7 @@ const Signup:React.FC = () => {
                                     <div className='col'>
                                         <label className='form-label'>Password</label>
                                         <div className='form-control p-0 d-flex focus-ring' >
-                                        <Field type={pass1type} name="password" className="form-control border border-0 focus-ring-dark w-100  " placeholder="*********" />
+                                        <Field type={pass1type} name="password" className="form-control border-0 focus-ring-dark w-100  " placeholder="*********" />
                                         {pass1visible==1 && (
                                             <i className="bi bi-eye me-3 pt-1 text-secondary" onClick={()=>{
                                                 setPass1Visible(0);
@@ -126,7 +126,7 @@ const Signup:React.FC = () => {
                                     <div className='col'>
                                         <label className='form-label'>Confirm Password</label>
                                         <div className='form-control p-0 d-flex focus-ring' >
-                                        <Field type={pass2type} name="confirmPass" className="form-control border border-0 focus-ring-dark w-100  " placeholder="*********" />
+                                        <Field type={pass2type} name="confirmPass" className="form-control border-0 focus-ring-dark w-100  " placeholder="*********" />
                                         {pass2visible==1 && (
                                             <i className="bi bi-eye me-3 pt-1 text-secondary" onClick={()=>{
                                                 setPass2Visible(0);

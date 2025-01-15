@@ -1,8 +1,16 @@
-import React from 'react'
-import { Outlet } from 'react-router-dom'
+import React, {useEffect} from 'react'
+import { Outlet, useNavigate } from 'react-router-dom'
 import '../styling/sidebar.css'
 
 const Sidebar1:React.FC = () => {
+  const navigate = useNavigate();
+
+  useEffect(()=>{
+    if (localStorage.getItem('token')) {
+      navigate('/app/dashboard');
+    }
+  },[]);
+
   return (
     <>
     <div className='row w-100'>

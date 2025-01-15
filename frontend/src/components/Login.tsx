@@ -13,13 +13,12 @@ const Signup:React.FC = () => {
     const navigate = useNavigate();
     const [pass1type, setPass1Type] = useState('password');
     const [pass1visible, setPass1Visible] = useState(0);
-    
-    console.log("----->", window.innerWidth);
 
     const authUser = async(formData:any) => {
         try{
             const response = await api.post(`${Local.AUTH_USER}`, formData);
             toast.success(response.data.message);
+            localStorage.setItem("token", response.data.token);
             navigate('/app/dashboard')
         }
         catch(err:any){
@@ -76,7 +75,7 @@ const Signup:React.FC = () => {
                                     <div className='col'>
                                         <label className='form-label'>Password</label>
                                         <div className='form-control p-0 d-flex focus-ring' >
-                                        <Field type={pass1type} name="password" className="form-control border border-0 focus-ring-dark w-100  " placeholder="*********" />
+                                        <Field type={pass1type} name="password" className="form-control border-0 focus-ring-dark w-100  " placeholder="*********" />
                                         {pass1visible==1 && (
                                             <i className="bi bi-eye me-3 pt-1 text-secondary" onClick={()=>{
                                                 setPass1Visible(0);
