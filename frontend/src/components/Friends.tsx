@@ -16,7 +16,7 @@ const Friends:React.FC = () => {
       </p>
 
       {/* search bar */}
-      <div className='m-2 bg-white p-3 ' >
+      <div className='m-2 bg-white p-3 rounded ' >
         <div className='d-flex' >
           <div className='d-flex ' >
             

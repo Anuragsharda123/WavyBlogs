@@ -30,7 +30,6 @@ const Sidebar2: React.FC = () => {
     <div className="d-flex vh-100">
       {/* Sidebar */}
       <div className="cmn-bg text-white d-flex flex-column p-3" style={{ width: "250px", height:'111%' }}>
-
         <div className="mb-4 ms-5">
             <svg width="81" height="73" viewBox="0 0 81 73" fill="none" className="mt-3" xmlns="http://www.w3.org/2000/svg">
                 <g clip-path="url(#clip0_1418_393)">
@@ -182,14 +181,20 @@ const Sidebar2: React.FC = () => {
             <li><Link className="dropdown-item text-secondary" to="#" onClick={()=>{Logout();}} >Log Out</Link></li>
         </ul>
         </div>
-        <div className=" bg-secondary-subtle h-100 ">
-          <div className="p-4 h-3/6" >
-            <Outlet />
-          </div>
-          <div className=' bg-secondary-subtle border-top border-secondary  row foot m-0 '>
-            <p className='border border-1 text-center text-secondary foot py-2 mb-0' > &copy; 2023 DR. Palig. All rights reserved. </p>
+        <div className="pt-5 h-100 bg-secondary-subtle rounded "> {/* Add padding-top to account for fixed navbar */}
+          <div className="overflow-auto h-100 pb-5"> {/* Add padding-bottom to account for footer */}
+            <div className="p-4">
+              <Outlet />
+            </div>
           </div>
         </div>
+
+        <div className="position-fixed bottom-0 end-0 foot bg-secondary-subtle border-top border-secondary" style={{ marginLeft: "250px" }}>
+          <p className="text-center text-secondary py-2 mb-0">
+            &copy; 2023 DR. Palig. All rights reserved.
+          </p>
+        </div>
+
       </div>
 
     </div>

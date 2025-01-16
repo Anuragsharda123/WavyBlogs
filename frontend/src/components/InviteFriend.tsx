@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage, FieldArray } from "formik";
 import * as Yup from "yup";
+import Button from "../common/components/CommonButton";
 
 const InviteFriend: React.FC = () => {
   const navigate = useNavigate();
@@ -71,7 +72,7 @@ const InviteFriend: React.FC = () => {
                   <div>
                     {values.friends.map((_, index) => (
                       <div key={index} className="mb-4">
-                        <h5>
+                        <h6 className="text-secondary fw-semibold small " >
                           Friend #{index + 1}{" "}
                           {index > 0 && (
                             <button
@@ -82,10 +83,10 @@ const InviteFriend: React.FC = () => {
                               Remove
                             </button>
                           )}
-                        </h5>
+                        </h6>
                         <div className="row g-3">
-                          <div className="col-md-4">
-                            <label htmlFor={`friends.${index}.name`} className="form-label">
+                          <div className="col-md-6">
+                            <label htmlFor={`friends.${index}.name`} className="form-label text-secondary fw-light ">
                               Full Name
                             </label>
                             <Field
@@ -100,8 +101,8 @@ const InviteFriend: React.FC = () => {
                               className="text-danger mt-1"
                             />
                           </div>
-                          <div className="col-md-4">
-                            <label htmlFor={`friends.${index}.email`} className="form-label">
+                          <div className="col-md-6">
+                            <label htmlFor={`friends.${index}.email`} className="form-label  text-secondary fw-light ">
                               Email
                             </label>
                             <Field
@@ -116,16 +117,15 @@ const InviteFriend: React.FC = () => {
                               className="text-danger mt-1"
                             />
                           </div>
-                          <div className="col-md-4">
-                            <label htmlFor={`friends.${index}.message`} className="form-label">
+                          <div className="col-md-12">
+                            <label htmlFor={`friends.${index}.message`} className="form-label  text-secondary fw-light ">
                               Message
                             </label>
                             <Field
                               name={`friends.${index}.message`}
-                              as="textarea"
+                              type="text"
                               className="form-control"
                               placeholder="Message"
-                              rows={1}
                             />
                             <ErrorMessage
                               name={`friends.${index}.message`}
@@ -139,7 +139,7 @@ const InviteFriend: React.FC = () => {
                     <div className="d-flex justify-content-between align-items-center">
                       <button
                         type="button"
-                        className="btn btn-link text-decoration-none"
+                        className="btn btn-link text-decoration-none ms-auto cmn-clr "
                         onClick={() =>
                           push({ name: "", email: "", message: "" })
                         }
@@ -150,9 +150,14 @@ const InviteFriend: React.FC = () => {
                   </div>
                 )}
               </FieldArray>
-              <button type="submit" className="btn btn-primary mt-3">
-                Submit
-              </button>
+              <div className="row mt-3" >
+                <div className="col-2 ms-auto" >
+                <Button text="Friends" type="submit" />
+                </div>
+                {/* <button type="submit" className="btn btn-primary mt-3 ms-auto col-2 ">
+                  Submit
+                </button> */}
+              </div>
             </Form>
           )}
         </Formik>
