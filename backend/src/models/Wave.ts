@@ -8,6 +8,7 @@ class Wave extends Model{
     public photo!: string;
     public video!: string;
     public status!: boolean;
+    public isactive!: boolean;
     public isDeleted!: boolean;
     public deletedAt!: Date;
     public text!: string;
@@ -23,16 +24,22 @@ Wave.init({
         },
     photo: {
         type: DataTypes.STRING,
+        allowNull:true
     },
     video: {
         type: DataTypes.STRING,
+        allowNull:true
     },
     text: {
         type: DataTypes.STRING,
     },
+    isactive:{
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
     status: {
         type: DataTypes.BOOLEAN,
-        defaultValue: false,
+        defaultValue: true
     },
     isDeleted: {
         type: DataTypes.BOOLEAN,

@@ -6,6 +6,10 @@ import User from "./User";
 class Request extends Model{
     public uuid!: string;
     public request_status!: Number;
+    public firstname!: string;
+    public lastname!: string;
+    public email!: string;
+    public message!: string;
     public status!: boolean;
     public isDeleted!: boolean;
     public deletedAt!: Date;
@@ -28,6 +32,22 @@ Request.init({
     status:{
         type: DataTypes.BOOLEAN,
         defaultValue: true,
+        allowNull: false
+    },
+    firstname:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    lastname:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    email:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    message:{
+        type: DataTypes.STRING,
         allowNull: false
     },
     url:{

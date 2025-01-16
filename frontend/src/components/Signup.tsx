@@ -3,8 +3,9 @@ import '../styling/sidebar.css';
 import * as Yup from 'yup';
 import {Formik, Form, Field, ErrorMessage} from 'formik';
 import { useMutation } from '@tanstack/react-query';
-import {Link, useNavigate} from 'react-router-dom';
+import {Link, useNavigate, useParams} from 'react-router-dom';
 import Local from '../environment/env';
+import CryptoJS from 'crypto-js';
 import api from '../api/axiosInstance';
 import { toast } from 'react-toastify';
 import Button from '../common/components/CommonButton';
@@ -15,6 +16,13 @@ const Signup:React.FC = () => {
     const [pass1visible, setPass1Visible] = useState(0);
     const [pass2type, setPass2Type] = useState('password');
     const [pass2visible, setPass2Visible] = useState(0);
+    const {url} = useParams();
+    if (url) {
+        console.log(url);
+        const bytes = CryptoJS.AES.decrypt("U2FsdGVkX1+gV3b1zdBq85TzR3QkxjzYZLt8DHQoUYxGpi4GwL9UYb47uG4zxP2hPM6Z8SU6oxH8Ov/jVtPX4EBdFO0XwuuwZ+YF0y6kvhMxN8qPvRv/abatuqUtf+l8", Local.CRYPTO_SECRET_KEY);
+        const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+        console.log(decryptedData);
+    }
 
     const registerUser = async(formData:any) => {
         try{

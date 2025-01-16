@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { Response } from "express";
 import { Local } from "../environment/env";
 import Preference from "../models/Preference";
+import Wave from "../models/Wave";
 import sendInvitation from "../utils/mailer";
 import Request from "../models/Request";
 import { loginTemplate } from "../mailTemplate/loginTemplate";
@@ -37,7 +38,8 @@ export const userLogin = async(req:any, res:Response) => {
                 res.status(401).json({'message': 'Wrong password'});
             }
             else{
-                const token = jwt.sign({uuid: user.uuid}, SECRET_KEY, {expiresIn: '1h'});
+                // const token = jwt.sign({uuid: user.uuid}, SECRET_KEY, {expiresIn: '1h'});
+                const token = jwt.sign({uuid: user.uuid}, SECRET_KEY);
                 res.status(200).json({'message': 'Login successful', "token": token, "user":user});
             }
         }
@@ -48,9 +50,13 @@ export const userLogin = async(req:any, res:Response) => {
 }
 
 // post request
-export const Register = async(req:any, res:Response) => {
+export const Register = async(req:any, res:any) => {
     try{
         const {firstname, lastname, email, password, phone} = req.body;
+        const isExist = await User.findOne({where: {email: email}});
+        if(isExist){
+            return res.status(400).json({'message': 'User already exist'});
+        }
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await User.create({
             firstname,
@@ -60,17 +66,17 @@ export const Register = async(req:any, res:Response) => {
             phone
         });
         
-        res.status(200).json({'message': 'User created successfully', "user": user});
+        return res.status(200).json({'message': 'User created successfully'});
     }
     catch(err){
-        res.status(500).json({'message': 'Something went wrong'})
+        return res.status(500).json({'message': 'Something went wrong'})
     }
 }
 
 // post request
 export const updateUser = async(req:any, res:Response) => {
     try{
-        const uuid = req.user;
+        const {uuid} = req.user;
         const {firstname, lastname, email, social_security, phone, address, address_one,
             address_two, city, state, zip_code, dob, gender, martial_status, social, kids} = req.body;
         
@@ -96,9 +102,10 @@ export const updateUser = async(req:any, res:Response) => {
 
 
 // post request
+// pending
 export const updateProfilePhoto = async(req:any, res:Response) => {
     try{
-        const uuid = req.user;
+        const {uuid} = req.user;
         
 
     }
@@ -115,7 +122,7 @@ export const updateProfilePhoto = async(req:any, res:Response) => {
 // post request
 export const addorUpdatePreference = async(req:any, res:Response) => {
     try{
-        const uuid = req.user;
+        const {uuid} = req.user;
         const { language, breakfast, lunch, dinner, wake_time, bed_time, weight_in, weight, height_in, height, blood_glucose_in,
             blood_glucose, blood_pressure_in, blood_pressure, cholesterol_in, cholesterol, distance_in, distance, system_email, member_services_email, sms,
             phone_call, post } = req.body;
@@ -146,7 +153,7 @@ export const addorUpdatePreference = async(req:any, res:Response) => {
 // post request
 export const updateUserPassword = async(req:any, res:Response) => {
     try{
-        const uuid = req.user;
+        const {uuid} = req.user;
         const {prevPass, newPass} = req.body;
         const user:any = await User.findByPk(uuid);
         const isMatched = await bcrypt.compare(prevPass, user.password);
@@ -167,14 +174,17 @@ export const updateUserPassword = async(req:any, res:Response) => {
 // post request
 export const inviteFriend = async(req:any, res:Response) => {
     try{
-        const uuid = req.user;
-        const {friends} = req.body;
+        const {uuid} = req.user;
+        const friends = req.body;
         const user:any = await User.findByPk(uuid);
+        console.log("====>", friends);
         await friends.map(async(friend:any)=>{
-
+            
             let existedUser = await User.findOne({where:{ email:friend.email }});
+            const firstname = friend.name.split(' ')[0];
+            const lastname = friend.name.split(' ')[1];
             if(existedUser){
-                const friend = await Friend.findOne({where:{[Op.or]:[
+                const alreadyfriend = await Friend.findOne({where:{[Op.or]:[
                     {[Op.and]:[
                         {user_1_Id:uuid},
                         {user_2_Id:existedUser.uuid}
@@ -184,31 +194,46 @@ export const inviteFriend = async(req:any, res:Response) => {
                         {user_2_Id:uuid}
                     ]}
                 ]}});
-                if(friend){
-                    res.status(400).json({"message":` ${existedUser.firstname} ${existedUser.lastname} is already your friend`});
+                if(alreadyfriend){
+                    return res.status(400).json({"message":` ${existedUser.firstname} ${existedUser.lastname} is already your friend`});
                 }
-                var template:string = loginTemplate(user.firstname, user.lastname, existedUser.email);
+                var template:string = loginTemplate(user.firstname, user.lastname, existedUser.email, friend.message);
                 const temp = template.split(' ');
                 const link = temp[temp.length-1];
+                const b = link.split('/');
+                const data = b[b.length-1];
+
                 let request = await Request.create({
-                    url:link,
+                    firstname,
+                    lastname,
+                    email:friend.email,
+                    message: friend.message,
+                    url:data,
                     sent_by: uuid,
                     sent_to: existedUser.uuid
                 });
             } else {
-                var template:string = signupTemplate(user.firstname, user.lastname, friend.email, friend.firstname, friend.lastname, user.uuid);
+                var template:string = signupTemplate(user.firstname, user.lastname, friend.email, firstname, lastname, user.uuid, friend.message);
                 const temp = template.split(' ');
                 const link = temp[temp.length-1];
+                const b = link.split('/');
+                const data = b[b.length-1];
+
 
                 let request = await Request.create({
-                    url:link,
+                    firstname,
+                    lastname,
+                    email:friend.email,
+                    message: friend.message,
+                    url:data,
                     sent_by: uuid,
                     sent_to_mail: friend.email
                 });
             }
             sendInvitation(friend.email, template);
         });
-        res.status(200).json({"message":"Invitation sent SUccessfully"});
+
+        res.status(200).json({"message":"Invitation sent Successfully"});
     }
     catch(err){
         res.status(500).json({"message":"Something went wrong"});
@@ -218,7 +243,7 @@ export const inviteFriend = async(req:any, res:Response) => {
 // get request
 export const getUserPreference = async(req:any, res:Response) => {
     try{
-        const uuid = req.user;
+        const {uuid} = req.user;
         const preference = await Preference.findOne({where: {userId: uuid}});
         if(preference){
             res.status(200).json(preference);
@@ -228,5 +253,59 @@ export const getUserPreference = async(req:any, res:Response) => {
     }
     catch(err){
         res.status(500).json({"message":"Something went wrong"});
+    }
+}
+
+// post request
+export const createWave = async(req:any, res:any) => {
+    try{
+        const {uuid} = req.user;
+        console.log("------>", uuid)
+        const {text} = req.body;
+        const photo = req.file.path;
+        console.log("======>", photo);
+        const wave = await Wave.create({
+            userId: uuid,
+            text:text,
+            photo:photo
+        });
+        if(wave) {
+            return res.status(200).json({"message": "Wave Created Successfully"});
+        } else {
+            return res.status(500).json({"message": "Something went wrong"});
+        }
+    }
+    catch(err){
+        return res.status(500).json({"message":`Something went wrong ${err}`});
+    }
+}
+
+// get request
+export const getMyWaves = async(req:any, res:any) => {
+    try{
+        const {uuid} = req.user;
+        const waves = await Wave.findAll({where: {userId: uuid}});
+        if(waves){
+            return res.status(200).json(waves);
+        }
+    }
+    catch(err){
+        return res.status(500).json({"message": `Something went wrong ${err}`});
+    }
+}
+
+// get request
+// pending
+export const getLatestWaves = async(req:any, res:Response) => {
+}
+
+export const getRequests = async(req:any, res:any) => {
+    try{
+        const {uuid} = req.user;
+        const requests = await Request.findAll({where: {sent_by: uuid}});
+        return res.status(200).json({ message:"Requests are fetched", requests});
+    }
+    catch(err){
+        return res.status(500).json({"message": `Something went wrong ${err}`});
     }
 }

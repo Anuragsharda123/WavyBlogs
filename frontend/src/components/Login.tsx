@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import '../styling/sidebar.css'
 import * as Yup from 'yup';
 import {Formik, Form, Field, ErrorMessage} from 'formik';
-import {Link, useNavigate} from 'react-router-dom'
+import {Link, useNavigate, useParams} from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import api from '../api/axiosInstance';
@@ -13,12 +13,17 @@ const Signup:React.FC = () => {
     const navigate = useNavigate();
     const [pass1type, setPass1Type] = useState('password');
     const [pass1visible, setPass1Visible] = useState(0);
+    const {url} = useParams();
+    if (url) {
+        console.log(url);
+    }
 
     const authUser = async(formData:any) => {
         try{
             const response = await api.post(`${Local.AUTH_USER}`, formData);
             toast.success(response.data.message);
             localStorage.setItem("token", response.data.token);
+            localStorage.setItem("user", JSON.stringify(response.data.user));
             navigate('/app/dashboard')
         }
         catch(err:any){

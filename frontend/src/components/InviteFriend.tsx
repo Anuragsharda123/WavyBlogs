@@ -1,8 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage, FieldArray } from "formik";
+import { useMutation } from "@tanstack/react-query";
 import * as Yup from "yup";
 import Button from "../common/components/CommonButton";
+import { toast } from "react-toastify";
+import api from "../api/axiosInstance";
+import Local from "../environment/env";
 
 const InviteFriend: React.FC = () => {
   const navigate = useNavigate();
@@ -20,12 +24,33 @@ const InviteFriend: React.FC = () => {
       .required("At least one friend is required"),
   });
 
+  const inviteFriend = async(friend:any)=>{
+    try{
+      const response = await api.post(`${Local.INVITE_FRIEND}`, friend, {
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      toast.success(`${response.data.message}`);
+      navigate('/app/dashboard')
+    }
+    catch(err:any){
+      toast.error(`${err.response.data.message}`);
+    }
+    return;
+  }
+
+  const inviteMutation = useMutation({
+    mutationFn: inviteFriend
+  })
+
   const initialValues = {
     friends: [{ name: "", email: "", message: "" }],
   };
 
   const handleSubmit = (values: any) => {
-    console.log("Submitted Data:", values);
+    inviteMutation.mutate(values.friends);
+    // console.log("Submitted Data:", values);
   };
 
   return (
@@ -139,10 +164,11 @@ const InviteFriend: React.FC = () => {
                     <div className="d-flex justify-content-between align-items-center">
                       <button
                         type="button"
-                        className="btn btn-link text-decoration-none ms-auto cmn-clr "
+                        className="btn btn-link text-decoration-none ms-auto"
                         onClick={() =>
                           push({ name: "", email: "", message: "" })
                         }
+                        style={{color:'#3E5677'}}
                       >
                         + Add More
                       </button>

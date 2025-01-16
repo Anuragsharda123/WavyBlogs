@@ -1,10 +1,44 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import '../styling/friend.css';
 import Button from '../common/components/CommonButton';
+import { toast } from 'react-toastify';
+import api from '../api/axiosInstance';
+import Local from '../environment/env';
 
 const Friends:React.FC = () => {
   const navigate = useNavigate();
+
+  const getRequests = async() => {
+    try{
+      const response = await api.get(`${Local.GET_REQUESTS}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      return response.data.requests;
+    }
+    catch(err:any){
+      toast.error(err.response.data.message);
+    }
+  }
+
+  const {data, isLoading, isError, error} = useQuery({
+    queryKey: ['requests'],
+    queryFn: getRequests
+  })
+
+  if(isLoading){
+    return (<div>Loading...</div>)
+  }
+
+  if(isError){
+    return (<div>Error: {error.message}</div>)
+  }
+
+  console.log(data);
+
   return (
     <div>
       <p className='h5 pb-3 d-flex ' > 
@@ -42,36 +76,49 @@ const Friends:React.FC = () => {
         {/* Friend list */}
         <div className="row bg-white p-1 py-3 rounded">
 
-            <div className="col-12 col-lg-6 mb-3 ">
-              <div className="p-3 frnd-card rounded ">Item 1</div>
+          {(data.length > 0) && (
+            data.map((request:any)=>(
+              <div className="col-12 col-lg-6 mb-3 ">
+                <div className='d-flex pb-0 frnd-card rounded ' >
+        
+                    <div className='d-flex ' >
+                      <div className='pt-1 ps-2' >
+                        <img
+                        src={`https://api.dicebear.com/5.x/initials/svg?seed=${request.firstname} ${request.lastname}`}
+                        alt="User Profile"
+                        className="rounded-circle border"
+                        style={{ width: "50px", height: "50px" }}
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        />
+                      </div>
+
+                      <div className='ms-3 small' >
+                        <p className='mb-0 mt-1 fw-bold cmn-clr ' >{request.email}</p>
+                        <p className='mt-0 ' > {request.firstname} {request.lastname} </p>
+                      </div>
+
+                    </div>
+
+                    <div className='ms-auto mt-3 me-4' >
+                      {(request.request_status == 1) && (
+                        <p className='badge bg-success fw-medium rounded-4 px-3' >Active</p>
+                      )}
+                      {(request.request_status == 0) && (
+                        <p className='badge fw-medium rounded-4 px-3 cmn-bg-pending-status' >Pending</p>
+                      )}
+                    </div>
+
+                </div>
+              </div>
+            ))
+          )}
+          
+          {(data.length==0) && (
+            <div className='text-center mt-5' >
+              <h4>Currently, Don't have any Friend</h4>
             </div>
-            <div className="col-12 col-lg-6 mb-3 ">
-              <div className="p-3 rounded frnd-card">Item 2</div>
-            </div>
-            <div className="col-12 col-lg-6 mb-3 ">
-              <div className="p-3 rounded frnd-card">Item 3</div>
-            </div>
-            <div className="col-12 col-lg-6 mb-3 ">
-              <div className="p-3 rounded frnd-card">Item 4</div>
-            </div>
-            <div className="col-12 col-lg-6 mb-3 ">
-              <div className="p-3 rounded frnd-card">Item 5</div>
-            </div>
-            <div className="col-12 col-lg-6 mb-3   ">
-              <div className="p-3 rounded  frnd-card">Item 6</div>
-            </div>
-            <div className="col-12 col-lg-6 mb-3   ">
-              <div className="p-3 rounded  frnd-card">Item 7</div>
-            </div>
-            <div className="col-12 col-lg-6 mb-3   ">
-              <div className="p-3 rounded  frnd-card">Item 8</div>
-            </div>
-            <div className="col-12 col-lg-6 mb-3   ">
-              <div className="p-3 rounded  frnd-card">Item 9</div>
-            </div>
-            <div className="col-12 col-lg-6 mb-3   ">
-              <div className="p-3 rounded  frnd-card">Item 10</div>
-            </div>
+          ) }
 
         </div>
       </div>
