@@ -7,6 +7,7 @@ interface config{
     GET_REQUESTS: string;
     INVITE_FRIEND: string;
     SECRET_KEY: string;
+    GET_LATEST_WAVES:string;
 }
 // console.log("--------->", import.meta.env.VITE_BASE_URL)
 const Local:config = {
@@ -18,6 +19,7 @@ const Local:config = {
     GET_REQUESTS: import.meta.env.VITE_GET_REQUESTS,
     INVITE_FRIEND: import.meta.env.VITE_INVITE_FRIEND,
     SECRET_KEY: import.meta.env.VITE_CRYPTO_SECRET_KEY,
+    GET_LATEST_WAVES: import.meta.env.VITE_GET_LATEST_WAVES
 }
 
 export default Local

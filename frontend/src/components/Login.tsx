@@ -14,13 +14,15 @@ const Signup:React.FC = () => {
     const [pass1type, setPass1Type] = useState('password');
     const [pass1visible, setPass1Visible] = useState(0);
     const {url} = useParams();
+    const data = url || 0
+    
     if (url) {
         console.log(url);
     }
 
     const authUser = async(formData:any) => {
         try{
-            const response = await api.post(`${Local.AUTH_USER}`, formData);
+            const response = await api.post(`${Local.AUTH_USER}`, {formData, data});
             toast.success(response.data.message);
             localStorage.setItem("token", response.data.token);
             localStorage.setItem("user", JSON.stringify(response.data.user));
@@ -46,10 +48,8 @@ const Signup:React.FC = () => {
 
     const submitHandler = (values:any) => {
         signupMutation.mutate(values);
-
     }
     
-
   return (
     <>
     <div className='h-100'>

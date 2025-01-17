@@ -3,7 +3,8 @@ import { userLogin, userList, Register, addorUpdatePreference,getUserPreference,
     inviteFriend, updateProfilePhoto, updateUser, updateUserPassword, 
     createWave,
     getMyWaves,
-    getRequests} from "../controllers/userController";
+    getRequests,
+    getLatestWaves} from "../controllers/userController";
 import userAuthMiddleware from "../middlewares/userAuth";
 import { uploadWave } from "../utils/uploadWave";
 
@@ -16,6 +17,7 @@ router.post('/invite-friend', userAuthMiddleware, inviteFriend);
 
 router.get('/getmywave', userAuthMiddleware, getMyWaves);
 router.get('/getrequests', userAuthMiddleware, getRequests);
+router.get('/getlatestwaves', userAuthMiddleware, getLatestWaves);
 
 // router.get("/user-list", userList);
 

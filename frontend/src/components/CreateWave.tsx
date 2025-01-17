@@ -82,7 +82,7 @@ const CreateWave: React.FC = () => {
     <div>
       <p
         className="h5 pb-3 d-flex bg-secondary-subtle"
-        onClick={() => navigate('/app/dashboard')}
+        onClick={() => {history.back();}}
       >
         <svg
           width="24"
@@ -108,7 +108,7 @@ const CreateWave: React.FC = () => {
 
       <div className="mx-2 mt-2 rounded">
         <div className="d-flex justify-content-between align-items-center cw-clr py-4 rounded-top-2">
-          <h1 className="fw-bold mx-auto cw-clr">Create Waves</h1>
+          <h1 className="fw-bold mx-auto cw-clr display-1 ">Create Waves</h1>
         </div>
       </div>
 
@@ -177,6 +177,7 @@ const CreateWave: React.FC = () => {
           )}
         </Formik>
 
+        {/* search */}
         <div className='d-flex mt-4' >
           <div className='d-flex ' >
             

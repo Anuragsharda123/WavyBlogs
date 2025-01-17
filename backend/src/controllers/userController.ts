@@ -11,6 +11,7 @@ import { loginTemplate } from "../mailTemplate/loginTemplate";
 import { signupTemplate } from "../mailTemplate/signuptemplate";
 import Friend from "../models/Friend";
 import { Op } from "sequelize";
+import Comment from "../models/Comment";
 
 const SECRET_KEY:any = Local.SECRET_KEY
 
@@ -27,7 +28,9 @@ export const userList = async(req:any, res:Response) => {
 // post request
 export const userLogin = async(req:any, res:Response) => {
     try{
-        const {email, password} = req.body;
+        const {email, password} = req.body.formData;
+        const {data} = req.body;
+        console.log(data);
         const user = await User.findOne({where: {email: email}});
         if(!user){
             res.status(401).json({'message': 'Invalid email'});
@@ -39,6 +42,32 @@ export const userLogin = async(req:any, res:Response) => {
             }
             else{
                 // const token = jwt.sign({uuid: user.uuid}, SECRET_KEY, {expiresIn: '1h'});
+                if(data){
+                    const invite:any = jwt.verify(data, SECRET_KEY, (err:any, info:any)=>{
+                        if(err){
+                            return 0;
+                        }
+                         return info;
+                    });
+                    if (invite) {
+                        const friendinfo = invite.split('_');
+                        console.log("friendinfo----->", friendinfo);
+                        const friend = await Friend.create({
+                            user_1_Id: user.uuid,
+                            user_2_Id: friendinfo[1],
+                        });
+                        console.log("Friend", friend);
+                        if (friend) {
+                            const request = await Request.findOne({where:{url:data}});
+                            console.log("request----->", request)
+                            if (request) {
+                                await request.update({
+                                    request_status:1
+                                });
+                            }
+                        }
+                    }
+                }
                 const token = jwt.sign({uuid: user.uuid}, SECRET_KEY);
                 res.status(200).json({'message': 'Login successful', "token": token, "user":user});
             }
@@ -52,7 +81,10 @@ export const userLogin = async(req:any, res:Response) => {
 // post request
 export const Register = async(req:any, res:any) => {
     try{
-        const {firstname, lastname, email, password, phone} = req.body;
+        const {firstname, lastname, email, password, phone} = req.body.formData;
+        const {data} = req.body;
+        console.log("data--->", data);
+
         const isExist = await User.findOne({where: {email: email}});
         if(isExist){
             return res.status(400).json({'message': 'User already exist'});
@@ -65,11 +97,41 @@ export const Register = async(req:any, res:any) => {
             password: hashedPassword,
             phone
         });
+
+        if(data){
+            const invite:any = jwt.verify(data, SECRET_KEY, (err:any, info:any)=>{
+                    if(err){
+                        return 0;
+                    }
+                     return info;
+                });
+
+            if (invite) {
+                const friendinfo = invite.split('_');
+                console.log("friendinfo----->", friendinfo);
+                const friend = await Friend.create({
+                    user_1_Id: user.uuid,
+                    user_2_Id: friendinfo[3]
+                })
+                console.log("friend----->", friend);
+                if(friend){
+                    const request = await Request.findOne({where:{url:data}});
+                    console.log("huhu===>", request)
+                    if(request){
+                        await request.update({
+                            request_status: 1,
+                            email: email,
+                            sent_to_mail: email
+                        })
+                    }
+                }
+            }
+        }
         
         return res.status(200).json({'message': 'User created successfully'});
     }
     catch(err){
-        return res.status(500).json({'message': 'Something went wrong'})
+        return res.status(500).json({'message': 'Something went wrong, Please try after sometime'})
     }
 }
 
@@ -181,6 +243,7 @@ export const inviteFriend = async(req:any, res:Response) => {
         await friends.map(async(friend:any)=>{
             
             let existedUser = await User.findOne({where:{ email:friend.email }});
+            console.log(friend);
             const firstname = friend.name.split(' ')[0];
             const lastname = friend.name.split(' ')[1];
             if(existedUser){
@@ -197,9 +260,9 @@ export const inviteFriend = async(req:any, res:Response) => {
                 if(alreadyfriend){
                     return res.status(400).json({"message":` ${existedUser.firstname} ${existedUser.lastname} is already your friend`});
                 }
-                var template:string = loginTemplate(user.firstname, user.lastname, existedUser.email, friend.message);
+                var template:string = loginTemplate(user.firstname, user.lastname, existedUser.email, friend.message, uuid);
                 const temp = template.split(' ');
-                const link = temp[temp.length-1];
+                const link = temp[temp.length-2];
                 const b = link.split('/');
                 const data = b[b.length-1];
 
@@ -215,7 +278,7 @@ export const inviteFriend = async(req:any, res:Response) => {
             } else {
                 var template:string = signupTemplate(user.firstname, user.lastname, friend.email, firstname, lastname, user.uuid, friend.message);
                 const temp = template.split(' ');
-                const link = temp[temp.length-1];
+                const link = temp[temp.length-2];
                 const b = link.split('/');
                 const data = b[b.length-1];
 
@@ -296,9 +359,44 @@ export const getMyWaves = async(req:any, res:any) => {
 
 // get request
 // pending
-export const getLatestWaves = async(req:any, res:Response) => {
+export const getLatestWaves = async(req:any, res:Response):Promise<any> => {
+    try{
+        const {uuid} = req.user;
+        const waves = await Wave.findAll({
+            where: {
+              userId: {
+                [Op.ne]: uuid
+              }
+            },
+            order: [['createdAt', 'DESC']],
+            limit: 6,
+            include:[
+                {
+                    model: User,
+                    as: 'user_wave'
+                },
+                {
+                    model: Comment,
+                    as: 'wave_comment',
+                    include:[
+                        {
+                            model: User,
+                            as: 'user_comment'
+                        }
+                    ]
+                }
+            ]
+          });
+        if(waves){
+            return res.status(200).json({ "message": "Waves are fetched", "waves": waves});
+        }
+    }
+    catch(err){
+        return res.status(500).json({"message": `Something went wrong ${err}`});
+    }
 }
 
+// get request
 export const getRequests = async(req:any, res:any) => {
     try{
         const {uuid} = req.user;

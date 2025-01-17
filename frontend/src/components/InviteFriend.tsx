@@ -63,9 +63,7 @@ const InviteFriend: React.FC = () => {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           className="me-4 pt-1"
-          onClick={() => {
-            navigate("/app/dashboard");
-          }}
+          onClick={() => {history.back();}}
         >
           <path
             d="M25.3467 10.4067C25.3467 10.9899 24.9133 11.472 24.3509 11.5483L24.1946 11.5588L1.15258 11.5588C0.516294 11.5588 0.000482559 11.043 0.000482559 10.4067C0.000482559 9.82341 0.433908 9.34138 0.99625 9.26509L1.15258 9.25458L24.1946 9.25458C24.8309 9.25458 25.3467 9.77039 25.3467 10.4067Z"
@@ -80,8 +78,8 @@ const InviteFriend: React.FC = () => {
         </svg>
         Friends
       </p>
-      <span className="ms-5 fw-bold text-secondary">
-        Invite some friends Jasmine, show them your Waves and let's see what they can do!
+      <span className="ms-5 fw-bold text-secondary ">
+        Invite some friends, show them your Waves and let's see what they can do!
       </span>
 
       <div className="container my-4">

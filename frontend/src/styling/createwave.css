@@ -1,6 +1,6 @@
 .cw-clr{
     background: #C5B084;
-    color: #b59d6b;
+    color: #B89C674D;
 }
 
 .main-img-div{
@@ -26,4 +26,10 @@
 
 .cmn-clr{
     color: #BEA16E
+}
+
+.close{
+    position: relative;
+    top: -58px;
+    left: 96%;
 }

@@ -8,6 +8,7 @@ import Local from '../environment/env';
 import api from '../api/axiosInstance';
 import { toast } from 'react-toastify';
 import Button from '../common/components/CommonButton';
+// import userAuthMiddleware from '../utils/inviteCodeDecrypt';
 
 const Signup:React.FC = () => {
     const navigate = useNavigate();
@@ -16,17 +17,20 @@ const Signup:React.FC = () => {
     const [pass2type, setPass2Type] = useState('password');
     const [pass2visible, setPass2Visible] = useState(0);
     const {url} = useParams();
+    const data = url || 0
+
     if (url) {
         console.log(url);
     }
 
     const registerUser = async(formData:any) => {
         try{
-            const response = await api.post(`${Local.CREATE_USER}`, formData);
+            const response = await api.post(`${Local.CREATE_USER}`, {formData, data});
             toast.success(response.data.message);
             navigate('/login');
         }
-        catch(err){
+        catch(err:any){
+            toast.error(`${err.response.data.message}`);
             console.log(err);
         }
     }
