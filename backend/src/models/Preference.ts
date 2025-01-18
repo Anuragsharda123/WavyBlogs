@@ -72,7 +72,7 @@ Preference.init(
     },
     weight: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     height_in: {
       type: DataTypes.ENUM('cm','ft/inches'),
@@ -80,7 +80,7 @@ Preference.init(
     },
     height: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     blood_glucose_in: {
       type: DataTypes.ENUM('mmo/l', 'mg/dl'),
@@ -88,7 +88,7 @@ Preference.init(
     },
     blood_glucose: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     cholesterol_in: {
       type: DataTypes.ENUM('mmo/l', 'mg/dl'),
@@ -96,7 +96,7 @@ Preference.init(
     },
     cholesterol: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     blood_pressure_in: {
       type: DataTypes.ENUM('kPa', 'mmHg'),
@@ -104,7 +104,7 @@ Preference.init(
     },
     blood_pressure: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     distance_in: {
       type: DataTypes.ENUM('km', 'miles'),
@@ -112,7 +112,7 @@ Preference.init(
     },
     distance: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     system_email: {
       type: DataTypes.BOOLEAN,

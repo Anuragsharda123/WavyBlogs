@@ -7,7 +7,7 @@ import Request from './models/Request';
 
 const app = express();
 
-app.use('/upload', express.static('upload'));
+app.use('/uploads', express.static('uploads'));
 app.use(cors());
 app.use(express.json());
 app.use('/', userRouter);

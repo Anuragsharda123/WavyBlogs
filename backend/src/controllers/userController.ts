@@ -16,9 +16,29 @@ import Comment from "../models/Comment";
 const SECRET_KEY:any = Local.SECRET_KEY
 
 // post request
-export const userList = async(req:any, res:Response) => {
+export const userList = async(req:any, res:Response):Promise<any> => {
     try{
-        await User.findAll();
+        const {uuid} = req.user;
+        const user = await User.findOne({where:{uuid}});
+        const friends = await Friend.findAll(
+            {where:{[Op.or]:[
+                {user_1_Id:uuid},
+                {user_2_Id:uuid}
+            ]},
+            include: [
+                {
+                    model: User,
+                    as: 'friend_1',
+                },
+                {
+                    model: User,
+                    as: 'friend_2',
+                }
+            ]
+        }
+    );
+
+        return res.status(200).json({"friends":friends, "user":user});
     }
     catch(err){
         res.status(500).json({'message': 'Something went wrong'});
@@ -185,30 +205,30 @@ export const updateProfilePhoto = async(req:any, res:Response) => {
 export const addorUpdatePreference = async(req:any, res:Response) => {
     try{
         const {uuid} = req.user;
-        const { language, breakfast, lunch, dinner, wake_time, bed_time, weight_in, weight, height_in, height, blood_glucose_in,
-            blood_glucose, blood_pressure_in, blood_pressure, cholesterol_in, cholesterol, distance_in, distance, system_email, member_services_email, sms,
+        const { language, breakfast, lunch, dinner, wake_time, bed_time, weight_in, height_in, blood_glucose_in,
+            blood_pressure_in, cholesterol_in, distance_in, system_email, member_services_email, sms,
             phone_call, post } = req.body;
 
         const preference = await Preference.findOne({where: {userId: uuid}});
 
         if(preference){
             await preference.update({
-                language, breakfast, lunch, dinner, wake_time, bed_time, weight_in, weight, height_in, height, blood_glucose_in,
-                blood_glucose, blood_pressure_in, blood_pressure, cholesterol_in, cholesterol, distance_in, distance, system_email, member_services_email, sms,
-                phone_call, post, userId: uuid
+                language, breakfast, lunch, dinner, wake_time, bed_time, weight_in, height_in, blood_glucose_in,
+            blood_pressure_in, cholesterol_in, distance_in, system_email, member_services_email, sms,
+            phone_call, post, userId: uuid
             })
         }
         else{
             await Preference.create({
-                language, breakfast, lunch, dinner, wake_time, bed_time, weight_in, weight, height_in, height, blood_glucose_in,
-                blood_glucose, blood_pressure_in, blood_pressure, cholesterol_in, cholesterol, distance_in, distance, system_email, member_services_email, sms,
-                phone_call, post, userId: uuid
+                language, breakfast, lunch, dinner, wake_time, bed_time, weight_in, height_in, blood_glucose_in,
+            blood_pressure_in, cholesterol_in, distance_in, system_email, member_services_email, sms,
+            phone_call, post, userId: uuid
             })
         }
         res.status(200).json({"message":"Preference updated Successfully"});
     }
     catch(err){
-        res.status(500).json({'message': 'Something went wrong'})
+        res.status(500).json({'message': `Something went wrong ${err}` })
     }
 }
 
@@ -216,7 +236,7 @@ export const addorUpdatePreference = async(req:any, res:Response) => {
 export const updateUserPassword = async(req:any, res:Response) => {
     try{
         const {uuid} = req.user;
-        const {prevPass, newPass} = req.body;
+        const {prevPass, newPass} = req.body.data;
         const user:any = await User.findByPk(uuid);
         const isMatched = await bcrypt.compare(prevPass, user.password);
         if(isMatched){
@@ -229,7 +249,7 @@ export const updateUserPassword = async(req:any, res:Response) => {
     }
     catch(err)
     {
-        res.status(500).json({"message":"Something went wrong"});
+        res.status(500).json({"message":`Something went wrong ${err}`});
     }
 }
 
@@ -309,7 +329,7 @@ export const getUserPreference = async(req:any, res:Response) => {
         const {uuid} = req.user;
         const preference = await Preference.findOne({where: {userId: uuid}});
         if(preference){
-            res.status(200).json(preference);
+            res.status(200).json({"preference":preference});
         } else {
             res.status(200).json({"message":"No preference found"});
         }
@@ -358,7 +378,6 @@ export const getMyWaves = async(req:any, res:any) => {
 }
 
 // get request
-// pending
 export const getLatestWaves = async(req:any, res:Response):Promise<any> => {
     try{
         const {uuid} = req.user;
@@ -375,16 +394,16 @@ export const getLatestWaves = async(req:any, res:Response):Promise<any> => {
                     model: User,
                     as: 'user_wave'
                 },
-                {
-                    model: Comment,
-                    as: 'wave_comment',
-                    include:[
-                        {
-                            model: User,
-                            as: 'user_comment'
-                        }
-                    ]
-                }
+                // {
+                //     model: Comment,
+                //     as: 'wave_comment',
+                //     include:[
+                //         {
+                //             model: User,
+                //             as: 'user_comment'
+                //         }
+                //     ]
+                // }
             ]
           });
         if(waves){
@@ -393,6 +412,30 @@ export const getLatestWaves = async(req:any, res:Response):Promise<any> => {
     }
     catch(err){
         return res.status(500).json({"message": `Something went wrong ${err}`});
+    }
+}
+
+// get request
+export const getComments = async(req:any, res:Response):Promise<any>=>{
+    try{
+        const {uuid} = req.user;
+        const {waveId} = req.body;
+        const comments = await Comment.findAll({
+            where: {
+                waveId: {
+                    [Op.eq]: waveId
+                }
+            },
+            include:[
+                {
+                    model: User,
+                    as: 'user_comment'
+                }
+            ]
+        });
+    }
+    catch(err){
+
     }
 }
 
