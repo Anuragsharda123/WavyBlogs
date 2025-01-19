@@ -26,7 +26,7 @@ const WaveModal:React.FC<any> = ({wave}) => {
 
     return (
         
-        <div className="modal-dialog modal-dialog-centered modal-lg ">
+        <div className="modal-dialog modal-dialog-centered ">
             <div className="modal-content">
             <div className="mx-2 mt-1 rounded">
                 <div className="d-flex justify-content-between align-items-center cw-clr py-4 rounded-top-2">

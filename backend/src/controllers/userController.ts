@@ -416,7 +416,7 @@ export const getLatestWaves = async(req:any, res:Response):Promise<any> => {
 }
 
 // get request
-export const getComments = async(req:any, res:Response):Promise<any>=>{
+export const getComments = async(req:any, res:Response):Promise<any> => {
     try{
         const {uuid} = req.user;
         const {waveId} = req.body;
@@ -433,6 +433,7 @@ export const getComments = async(req:any, res:Response):Promise<any>=>{
                 }
             ]
         });
+        return res.json({"comments":comments});
     }
     catch(err){
 
@@ -449,4 +450,28 @@ export const getRequests = async(req:any, res:any) => {
     catch(err){
         return res.status(500).json({"message": `Something went wrong ${err}`});
     }
+}
+
+// post request
+export const addComment = async(req:any, res:Response):Promise<any> =>{
+    try{
+        const {uuid} = req.user;
+        const {comment, waveId } = req.body;
+        const newcomment = await Comment.create({
+            comment,
+            waveId,
+            userId: uuid
+        });
+        if(newcomment){
+            res.status(200).json({"message": "Comment add successfully"});
+        }
+    }
+    catch(err){
+        res.status(500).json({"message":`Something went wrong ${err}`});
+    }
+}
+
+//post request
+export const updateComment = async(req:any, res:Response):Promise<any> => {
+    
 }
