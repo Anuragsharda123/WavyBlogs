@@ -456,14 +456,14 @@ export const getRequests = async(req:any, res:any) => {
 export const addComment = async(req:any, res:Response):Promise<any> =>{
     try{
         const {uuid} = req.user;
-        const {comment, waveId } = req.body;
+        const {comment, waveId } = req.body.data;
         const newcomment = await Comment.create({
             comment,
             waveId,
             userId: uuid
         });
         if(newcomment){
-            res.status(200).json({"message": "Comment add successfully"});
+            res.status(200).json({"message": "Comment added successfully"});
         }
     }
     catch(err){
@@ -473,5 +473,28 @@ export const addComment = async(req:any, res:Response):Promise<any> =>{
 
 //post request
 export const updateComment = async(req:any, res:Response):Promise<any> => {
-    
+    try{
+        const {uuid} = req.user;
+        const {comment, commentId} = req.body;
+        const updatedComment = await Comment.update({comment}, {where: {uuid: commentId}});
+        if(updatedComment){
+            res.status(200).json({"message": "Comment updated successfully"});
+        }
+    }
+    catch(err){
+        return res.status(500).json({"message":`Something went wrong ${err}`});
+    }
+}
+
+export const deleteComment = async(req:any, res:Response):Promise<any> => {
+    try{
+        const {uuid} = req.user;
+        const {commentId} = req.params;
+        await Comment.update({status:false}, {where: {uuid: commentId}});
+        
+        return res.status(200).json({"message": "Comment deleted successfully"});
+    }
+    catch(err){
+
+    }
 }

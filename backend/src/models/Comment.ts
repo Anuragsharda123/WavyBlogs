@@ -21,7 +21,7 @@ Comment.init({
         primaryKey: true,
         allowNull: false,
     },
-      comment: {
+    comment: {
         type: DataTypes.STRING,
         allowNull: false
     },

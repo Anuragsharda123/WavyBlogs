@@ -13,6 +13,9 @@ interface config{
     UPDATE_PREFERENCE: string;
     EDIT_PASSWORD: string;
     GET_FRIENDS: string;
+    ADD_COMMENT: string;
+    EDIT_COMMENT: string;
+    DELETE_COMMENT: string;
 }
 // console.log("--------->", import.meta.env.VITE_BASE_URL)
 const Local:config = {
@@ -30,6 +33,9 @@ const Local:config = {
     UPDATE_PREFERENCE: import.meta.env.VITE_UPDATE_PREFERENCE,
     EDIT_PASSWORD: import.meta.env.VITE_EDIT_PASSWORD,
     GET_FRIENDS: import.meta.env.VITE_GET_FRIENDS,
+    ADD_COMMENT: import.meta.env.VITE_ADD_COMMENT,
+    EDIT_COMMENT: import.meta.env.VITE_EDIT_COMMENT,
+    DELETE_COMMENT: import.meta.env.VITE_DELETE_COMMENT
 }
 
 export default Local
